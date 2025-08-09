@@ -50,13 +50,16 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       
         <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row justify-center items-center gap-4 md:gap-8 py-8">
             
-            <PortalCard
-                onClick={onSmartSearch}
-                icon={<SearchIcon className="w-20 h-20 text-[var(--color-accent-primary)]" />}
-                title="Smart Search"
-                description="Search inside any file to find specific information quickly."
-                gradient="linear-gradient(to bottom right, #FBBF24, #a37b16)"
-            />
+            <div className="hidden md:flex">
+                <PortalCard
+                    onClick={onSmartSearch}
+                    icon={<SearchIcon className="w-20 h-20 text-[var(--color-accent-primary)]" />}
+                    title="Smart Search"
+                    description="Search inside any file to find specific information quickly."
+                    gradient="linear-gradient(to bottom right, #FBBF24, #a37b16)"
+                />
+            </div>
+
 
             <div className="flex flex-col items-center">
                 <div 
@@ -78,7 +81,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                 >
                     <div className="bg-[var(--color-background-primary)] rounded-[calc(0.5rem-2px)] p-6 flex flex-col items-center justify-around h-full text-center">
                         <div className="space-y-2">
-                            <p className="text-lg font-medium text-[var(--color-text-secondary)]">More interaction. More explanation. More questions.</p>
+                            <p className="text-lg font-medium text-[var(--color-text-secondary)]">More interaction. More explanation. More questions. Deep understand.</p>
                             <p className="text-2xl font-bold text-[var(--color-text-primary)]">Start your scientific treasure hunt with</p>
                         </div>
                         
@@ -99,14 +102,16 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                     </div>
                 </div>
             </div>
-
-            <PortalCard
-                onClick={onStartInteractiveBook}
-                icon={<GradientBookOpenIcon className="w-20 h-20" gradientId="book-portal-icon-gradient" />}
-                title="Your Interactive Book"
-                description="Analysis, explanations, and deep tests."
-                gradient="linear-gradient(to bottom right, #FBBF24, #a37b16)"
-            />
+            
+            <div className="hidden md:flex">
+                <PortalCard
+                    onClick={onStartInteractiveBook}
+                    icon={<GradientBookOpenIcon className="w-20 h-20" gradientId="book-portal-icon-gradient" />}
+                    title="Your Interactive Book"
+                    description="Analysis, explanations, and deep tests."
+                    gradient="linear-gradient(to bottom right, #FBBF24, #a37b16)"
+                />
+            </div>
         </div>
         
         {hasLastBook && (

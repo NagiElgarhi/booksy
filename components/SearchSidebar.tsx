@@ -1,9 +1,9 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { searchForMaterials } from '../services/geminiService';
 import { SearchResult, SearchFilter } from '../types';
-import { ArrowLeftIcon, ArrowRightIcon, SearchIcon, HomeIcon, XIcon } from './icons';
+import { HomeIcon, SearchIcon, XIcon, HtmlIcon, PdfIcon, PrintIcon } from './icons';
 import LoadingSpinner from './LoadingSpinner';
 
 interface SearchSidebarProps {
@@ -18,6 +18,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({ isOpen, onClose, onGoHome
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<SearchResult | null>(null);
     const [filter, setFilter] = useState<SearchFilter>('all');
+    const sidebarRef = useRef<HTMLElement>(null);
 
     const handleSearch = async (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -43,6 +44,36 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({ isOpen, onClose, onGoHome
         setIsLoading(false);
     };
     
+    const handlePrint = () => {
+        if (!sidebarRef.current) return;
+        const sidebarElement = sidebarRef.current;
+        document.body.classList.add('printing-sidebar');
+        sidebarElement.classList.add('is-printing');
+        const cleanup = () => {
+            document.body.classList.remove('printing-sidebar');
+            sidebarElement.classList.remove('is-printing');
+            window.removeEventListener('afterprint', cleanup);
+        };
+        window.addEventListener('afterprint', cleanup);
+        window.print();
+    };
+    
+    const downloadHtml = (elementId: string, title: string) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        const styles = `body { font-family: 'Times New Roman', serif; line-height: 1.6; padding: 2rem; } a { text-decoration: none; color: #0d6efd; } a span { display: block; }`;
+        const htmlString = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${title}</title><style>${styles}</style></head><body><h3>${title}</h3>${element.innerHTML}</body></html>`;
+        const blob = new Blob([htmlString], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     const filters: { key: SearchFilter, label: string }[] = [
         { key: 'all', label: 'All' },
         { key: 'sites', label: 'Sites Only' },
@@ -52,24 +83,30 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({ isOpen, onClose, onGoHome
     const goldenGradient = 'linear-gradient(to bottom right, #FBBF24, #262626)';
 
     return (
-        <div
+        <aside
+            ref={sidebarRef}
             className={`fixed top-0 left-0 h-full bg-[var(--color-background-secondary)]/70 backdrop-blur-lg shadow-2xl transition-transform duration-300 ease-in-out z-40 flex flex-col w-full max-w-md ${
                 isOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
         >
             {isOpen && (
                 <>
-                    <div className="flex-shrink-0 p-4 border-b border-[var(--color-border-primary)] flex justify-between items-center">
-                        <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close">
-                            <XIcon className="w-6 h-6 golden-text" />
-                        </button>
+                    <div className="flex-shrink-0 p-4 border-b border-[var(--color-border-primary)] flex justify-between items-center no-print-sidebar">
+                        <div className="flex items-center gap-2">
+                             <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close">
+                                <XIcon className="w-6 h-6 golden-text" />
+                            </button>
+                             <button onClick={() => downloadHtml('search-content', `Search Results for ${query}`)} title="Download HTML" disabled={!results || results.sources.length === 0} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><HtmlIcon className="w-4 h-4"/></button>
+                             <button onClick={handlePrint} title="Download PDF / Print" disabled={!results || results.sources.length === 0} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PdfIcon className="w-4 h-4"/></button>
+                             <button onClick={handlePrint} title="Print" disabled={!results || results.sources.length === 0} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PrintIcon className="w-4 h-4"/></button>
+                        </div>
                         <h2 className="text-xl font-bold golden-text">Search for Materials</h2>
                         <button onClick={onGoHome} className="p-2 rounded-lg text-white flex items-center gap-2 px-4" aria-label="Go Home" style={{backgroundImage: goldenGradient}}>
                             <HomeIcon className="w-6 h-6" /> <span className="font-bold">Home</span>
                         </button>
                     </div>
                     
-                    <div className="flex-shrink-0 p-4 space-y-3">
+                    <div className="flex-shrink-0 p-4 space-y-3 no-print-sidebar">
                         <form onSubmit={handleSearch} className="flex gap-2">
                             <input
                                 type="text"
@@ -97,7 +134,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({ isOpen, onClose, onGoHome
                         </div>
                     </div>
 
-                    <div className="flex-grow overflow-y-auto p-4 space-y-4">
+                    <div className="flex-grow overflow-y-auto p-4 space-y-4 printable-content" id="search-content">
                         {isLoading && !results && <LoadingSpinner text="Searching..." />}
                         {error && <div className="text-center text-dark-gold-gradient bg-yellow-500/10 p-3 rounded-lg">{error}</div>}
                         {results && (
@@ -124,7 +161,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({ isOpen, onClose, onGoHome
                     </div>
                 </>
             )}
-        </div>
+        </aside>
     );
 };
 

@@ -16,7 +16,7 @@ import TaskManager from './components/TaskManager';
 import UserGuide from './components/UserGuide';
 import Calculator from './components/Calculator';
 import PurchaseRequest from './components/PurchaseRequest';
-import { HomeIcon, WhatsAppIcon, EditIcon, RomanTempleIcon, SummarizeIcon, QuestionMarkCircleIcon, ChatBubbleIcon, SearchIcon, EggIcon, OliveIcon, SettingsIcon, MailIcon, PrayerTimeIcon, ClipboardListIcon, InfoIcon, ShieldIcon, CalculatorIcon, BookOpenIcon, CheckCircleIcon, BookshelfIcon, GradientBookOpenIcon } from './components/icons';
+import { HomeIcon, WhatsAppIcon, EditIcon, RomanTempleIcon, SummarizeIcon, QuestionMarkCircleIcon, ChatBubbleIcon, SearchIcon, EggIcon, OliveIcon, SettingsIcon, MailIcon, PrayerTimeIcon, ClipboardListIcon, InfoIcon, ShieldIcon, CalculatorIcon, BookOpenIcon, CheckCircleIcon, BookshelfIcon, GradientBookOpenIcon, MenuIcon } from './components/icons';
 import { extractTextPerPage } from './services/pdfService';
 import { analyzeDocumentStructure, analyzeChapterForLessons, generateInteractiveLesson, generateInitialQuestions, getFeedbackOnAnswers, generateMoreQuestions, getDeeperExplanation, getAiCorrections } from './services/geminiService';
 import { generateTheme } from './services/themeService';
@@ -51,6 +51,7 @@ function App() {
   
   // UI State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<{hue: number, mode: ThemeMode}>({ hue: 35, mode: 'dark' });
   const [activeSidebar, setActiveSidebar] = useState<string | null>(null);
   const [initialChapterForTest, setInitialChapterForTest] = useState<Chapter | null>(null);
@@ -146,6 +147,11 @@ function App() {
   const handleMenuItemClick = (action: () => void) => {
       action();
       setIsSettingsOpen(false);
+  };
+
+  const handleMobileMenuItemClick = (action: () => void) => {
+    action();
+    setIsMobileMenuOpen(false);
   };
 
   const handleFileSelect = useCallback(async (file: File) => {
@@ -502,6 +508,13 @@ function App() {
     </button>
   );
 
+  const MobileMenuItem: React.FC<{icon: React.FC<any>, text: string, onClick: () => void}> = ({ icon: Icon, text, onClick }) => (
+    <button onClick={onClick} className="flex items-center gap-4 p-3 text-left w-full rounded-md hover:bg-[var(--color-background-tertiary)] transition-colors">
+        <Icon className="w-6 h-6 text-[var(--color-accent-primary)]" gradientId={`mobile-menu-icon-${text.replace(/\s+/g, '-')}`} />
+        <span className="font-semibold text-[var(--color-text-primary)] text-lg">{text}</span>
+    </button>
+  );
+
   return (
     <div className="min-h-screen w-full bg-[var(--color-background-primary)] text-[var(--color-text-primary)] flex flex-col relative" dir="ltr">
       <input 
@@ -526,19 +539,28 @@ function App() {
                 </div>
             </div>
 
-             <div className="flex items-center justify-center gap-5">
-                    <button onClick={() => setActiveSidebar('edit')} title="Edit Text" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><EditIcon className="w-6 h-6" /></button>
-                    <button onClick={() => setActiveSidebar('summarize')} title="Summaries" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><SummarizeIcon className="w-6 h-6" /></button>
-                    <button onClick={() => setActiveSidebar('test_me')} title="Test Me" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><CheckCircleIcon className="w-6 h-6" /></button>
-                    <button onClick={() => setActiveSidebar('ask_me')} title="Ask Me" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><QuestionMarkCircleIcon className="w-6 h-6" /></button>
+             <div className="flex items-center justify-center">
+                {/* Desktop Buttons */}
+                <div className="hidden md:flex items-center justify-center gap-4">
+                    <button onClick={() => setActiveSidebar('edit')} title="Edit Text" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><EditIcon className="w-5 h-5" /></button>
+                    <button onClick={() => setActiveSidebar('summarize')} title="Summaries" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><SummarizeIcon className="w-5 h-5" /></button>
+                    <button onClick={() => setActiveSidebar('test_me')} title="Test Me" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><CheckCircleIcon className="w-5 h-5" /></button>
+                    <button onClick={() => setActiveSidebar('ask_me')} title="Ask Me" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><QuestionMarkCircleIcon className="w-5 h-5" /></button>
                     <button onClick={triggerFileInput} title="Your Interactive Book" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><GradientBookOpenIcon className="w-6 h-6" gradientId="header-book-icon" /></button>
-                    <button onClick={() => setActiveSidebar('chat')} title="Academic Chat" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><ChatBubbleIcon className="w-6 h-6" /></button>
-                    <button onClick={() => setActiveSidebar('smart_search')} title="Smart Search" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><SearchIcon className="w-6 h-6" /></button>
+                    <button onClick={() => setActiveSidebar('chat')} title="Academic Chat" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><ChatBubbleIcon className="w-5 h-5" /></button>
+                    <button onClick={() => setActiveSidebar('smart_search')} title="Smart Search" className="p-2 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors"><SearchIcon className="w-5 h-5" /></button>
+                </div>
+                {/* Mobile Hamburger Menu Button */}
+                <div className="md:hidden">
+                    <button onClick={() => setIsMobileMenuOpen(prev => !prev)} className="p-2 rounded-full text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] transition-colors">
+                        <MenuIcon className="w-6 h-6" />
+                    </button>
+                </div>
             </div>
           
             <div className="flex items-center justify-end gap-4">
                 <button onClick={handleThemeToggle} title="Toggle Mode" className="p-1 rounded-full hover:bg-[var(--color-background-tertiary)] transition-colors">
-                    {theme.mode === 'dark' ? <EggIcon className="w-8 h-8"/> : <OliveIcon className="w-8 h-8"/>}
+                    {theme.mode === 'dark' ? <EggIcon className="w-8 h-8 rotate-180"/> : <OliveIcon className="w-8 h-8 rotate-90"/>}
                 </button>
                  <div className="relative">
                 <button
@@ -580,6 +602,20 @@ function App() {
 
         </div>
       </header>
+
+      {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-16 right-0 left-0 z-30 bg-[var(--color-background-primary)] shadow-lg border-b border-[var(--color-border-primary)] no-print">
+              <nav className="flex flex-col p-2">
+                  <MobileMenuItem icon={SearchIcon} text="Smart Search" onClick={() => handleMobileMenuItemClick(() => setActiveSidebar('smart_search'))} />
+                  <MobileMenuItem icon={BookOpenIcon} text="Your Interactive Book" onClick={() => handleMobileMenuItemClick(triggerFileInput)} />
+                  <MobileMenuItem icon={EditIcon} text="Edit Text" onClick={() => handleMobileMenuItemClick(() => setActiveSidebar('edit'))} />
+                  <MobileMenuItem icon={SummarizeIcon} text="Summaries" onClick={() => handleMobileMenuItemClick(() => setActiveSidebar('summarize'))} />
+                  <MobileMenuItem icon={CheckCircleIcon} text="Test Me" onClick={() => handleMobileMenuItemClick(() => setActiveSidebar('test_me'))} />
+                  <MobileMenuItem icon={QuestionMarkCircleIcon} text="Ask Me" onClick={() => handleMobileMenuItemClick(() => setActiveSidebar('ask_me'))} />
+                  <MobileMenuItem icon={ChatBubbleIcon} text="Academic Chat" onClick={() => handleMobileMenuItemClick(() => setActiveSidebar('chat'))} />
+              </nav>
+          </div>
+      )}
       
       <main className="flex-grow flex justify-center items-center p-4">
         {mainContent()}
@@ -593,8 +629,8 @@ function App() {
       <AskMeSidebar isOpen={activeSidebar === 'ask_me'} onClose={() => setActiveSidebar(null)} onGoHome={onGoHome} />
       <SmartSearchSidebar isOpen={activeSidebar === 'smart_search'} onClose={() => setActiveSidebar(null)} onGoHome={onGoHome} />
 
-       <footer className="no-print bg-[var(--color-background-secondary)]/50 border-t border-[var(--color-border-primary)] p-4 text-center">
-            <div className="flex justify-center items-center gap-x-12">
+       <div className="no-print p-6 text-center">
+            <div className="flex flex-col items-center gap-y-4">
                 <button 
                     onClick={() => setActiveView('purchase_request')}
                     className="flex items-center gap-2 text-base font-bold transition-transform transform hover:scale-105"
@@ -644,7 +680,7 @@ function App() {
                     </span>
                 </a>
             </div>
-        </footer>
+        </div>
     </div>
   );
 }

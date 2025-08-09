@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Chapter, PageText, InteractiveBlock, MultipleChoiceQuestionBlock, TrueFalseQuestionBlock, FillInTheBlankQuestionBlock, OpenEndedQuestionBlock, UserAnswer, FeedbackItem, AiCorrection } from '../types';
 import { generateInitialQuestions, analyzeDocumentStructure, getFeedbackOnAnswers, getAiCorrections } from '../services/geminiService';
@@ -337,28 +338,17 @@ const QuestionGeneratorSidebar: React.FC<QuestionGeneratorSidebarProps> = ({ isO
         if (isLoading) return <div className="flex items-center justify-center h-full"><LoadingSpinner text={loadingText} /></div>;
         if (error && currentStep !== 'chapters') return <div className="p-4 text-center"><p className="p-4 bg-yellow-500/10 text-dark-gold-gradient rounded-lg">{error}</p><button onClick={() => handleReset(true)} style={{ backgroundImage: goldenGradient }} className="mt-4 px-4 py-2 text-white rounded-lg">Start Over</button></div>;
         
-        const HeaderControls = ({ title, contentId }: {title: string, contentId: string}) => (
-             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-center flex-grow golden-text">{title}</h3>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => downloadHtml(contentId, title)} title="Download HTML" className="p-2 text-white rounded-md" style={{ backgroundImage: goldenGradient }}><HtmlIcon className="w-4 h-4"/></button>
-                    <button onClick={handlePrint} title="Download PDF / Print" className="p-2 text-white rounded-md" style={{ backgroundImage: goldenGradient }}><PdfIcon className="w-4 h-4"/></button>
-                    <button onClick={handlePrint} title="Print" className="p-2 text-white rounded-md" style={{ backgroundImage: goldenGradient }}><PrintIcon className="w-4 h-4"/></button>
-                </div>
-            </div>
-        );
-
         switch(currentStep) {
             case 'upload': return <div className="p-6 flex flex-col items-center justify-center h-full text-center"><UploadIcon className="w-16 h-16 golden-text mb-4" /><h3 className="text-xl font-bold mb-2 golden-text">Generate Questions from a Document</h3><p className="text-sm text-gold-brown mb-6 max-w-sm">Upload a PDF, we'll analyze it into chapters, then you can pick any chapter to instantly generate questions about it.</p><label htmlFor="qg-file-upload" className="cursor-pointer w-full max-w-xs text-center p-4 mb-4 text-md font-semibold text-white rounded-lg shadow-lg" style={{ backgroundImage: goldenGradient }}>{file ? file.name : 'Select a PDF file'}</label><input id="qg-file-upload" type="file" className="sr-only" accept=".pdf" onChange={handleFileChange} /><button onClick={handleAnalyze} disabled={!file} className="w-full max-w-xs px-8 py-3 text-lg font-bold text-white rounded-lg shadow-lg disabled:opacity-50" style={{ backgroundImage: goldenGradient }}>Analyze Document</button></div>;
             case 'chapters': return <div className="p-4"><h3 className="text-xl font-bold text-center mb-4 golden-text">Select a chapter to generate questions</h3>{error && <p className="p-3 my-2 bg-yellow-500/10 text-dark-gold-gradient rounded-lg text-sm">{error}</p>}{chapters?.length ? <ul className="space-y-2 max-h-[80vh] overflow-y-auto">{chapters.map(c => <li key={c.id}><button onClick={() => handleChapterSelect(c)} className="w-full text-left p-3 rounded-lg font-semibold text-dark-gold-gradient bg-[var(--color-background-tertiary)] hover:bg-yellow-500/10"><span>{c.title} (p. {c.startPage}-{c.endPage})</span></button></li>)}</ul> : <p>No chapters found.</p>}<button onClick={() => handleReset(true)} style={{ backgroundImage: goldenGradient }} className="mt-4 px-4 py-2 w-full text-white font-bold rounded-lg">Select another file</button></div>;
-            case 'questions': return <div className="p-4 flex flex-col h-full"><HeaderControls title={`Questions for: ${activeChapter?.title}`} contentId="questions-content" /><div id="questions-content" style={{ fontFamily: "'Times New Roman', serif" }} className="space-y-4 overflow-y-auto flex-grow">{questionsToDisplay?.length ? questionsToDisplay.map(renderQuestion) : <p className="text-center text-dark-gold-gradient">No questions generated.</p>}</div><div className="pt-2 mt-2 border-t border-[var(--color-border-primary)]"><button onClick={handleSubmitAnswers} disabled={isSubmitting || Object.keys(userAnswers).length === 0} className="w-full px-4 py-3 text-lg font-bold text-white rounded-lg disabled:opacity-50" style={{ backgroundImage: goldenGradient }}>{isSubmitting ? 'Evaluating...' : 'Submit Answers'}</button></div></div>;
+            case 'questions': return <div className="p-4 flex flex-col h-full"><h3 className="text-xl font-bold text-center flex-grow golden-text mb-4">{`Questions for: ${activeChapter?.title}`}</h3><div id="questions-content" style={{ fontFamily: "'Times New Roman', serif" }} className="space-y-4 overflow-y-auto flex-grow">{questionsToDisplay?.length ? questionsToDisplay.map(renderQuestion) : <p className="text-center text-dark-gold-gradient">No questions generated.</p>}</div><div className="pt-2 mt-2 border-t border-[var(--color-border-primary)]"><button onClick={handleSubmitAnswers} disabled={isSubmitting || Object.keys(userAnswers).length === 0} className="w-full px-4 py-3 text-lg font-bold text-white rounded-lg disabled:opacity-50" style={{ backgroundImage: goldenGradient }}>{isSubmitting ? 'Evaluating...' : 'Submit Answers'}</button></div></div>;
             case 'results':
                 const correctCount = feedback?.filter(f => f.isCorrect).length || 0;
                 const totalCount = feedback?.length || 0;
                 const incorrectCount = totalCount - correctCount;
                 return (
                     <div className="p-4 flex flex-col h-full">
-                        <HeaderControls title={`Results: ${activeChapter?.title}`} contentId="results-content" />
+                        <h3 className="text-xl font-bold text-center flex-grow golden-text mb-4">{`Results: ${activeChapter?.title}`}</h3>
                         <div className="p-4 bg-yellow-500/10 rounded-lg text-center mb-4"><p className="text-2xl font-bold golden-text">You got <span className="golden-text">{correctCount}</span> out of <span className="golden-text">{totalCount}</span></p></div>
                         <div className="flex gap-2 mb-4">
                             {incorrectCount > 0 && <button onClick={handleRetry} className="flex-1 px-4 py-2 text-white font-bold rounded-lg" style={{ backgroundImage: goldenGradient }}>Retry Incorrect</button>}
@@ -373,13 +363,22 @@ const QuestionGeneratorSidebar: React.FC<QuestionGeneratorSidebarProps> = ({ isO
         }
     }
 
+    const isDownloadable = currentStep === 'questions' || currentStep === 'results';
+    const downloadContentId = currentStep === 'questions' ? 'questions-content' : 'results-content';
+    const downloadTitle = `Test for ${activeChapter?.title || 'Chapter'}`;
+
     return (
         <aside ref={sidebarRef} className={`fixed inset-0 bg-[var(--color-background-secondary)]/70 backdrop-blur-lg shadow-2xl transition-transform duration-500 ease-in-out z-50 flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!isOpen}>
             {isOpen && (
                 <>
                     <div className="flex-shrink-0 p-4 border-b border-[var(--color-border-primary)] flex justify-between items-center bg-[var(--color-background-primary)] no-print-sidebar">
-                         <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close"><XIcon className="w-6 h-6 golden-text" /></button>
-                        <h2 className="text-xl font-bold golden-text flex items-center gap-2"><RomanTempleIcon className="w-6 h-6 golden-text" /> Test Me (Question Generator)</h2>
+                        <div className="flex items-center gap-2">
+                            <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close"><XIcon className="w-6 h-6 golden-text" /></button>
+                            <button onClick={() => downloadHtml(downloadContentId, downloadTitle)} title="Download HTML" disabled={!isDownloadable} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><HtmlIcon className="w-4 h-4"/></button>
+                            <button onClick={handlePrint} title="Download PDF / Print" disabled={!isDownloadable} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PdfIcon className="w-4 h-4"/></button>
+                            <button onClick={handlePrint} title="Print" disabled={!isDownloadable} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PrintIcon className="w-4 h-4"/></button>
+                        </div>
+                        <h2 className="text-xl font-bold golden-text flex items-center gap-2"><RomanTempleIcon className="w-6 h-6 golden-text" /> Test Me</h2>
                         <button onClick={onGoHome} className="p-2 rounded-lg hover:bg-[var(--color-border-primary)] flex items-center gap-2 px-4 text-white" aria-label="Go Home" style={{ backgroundImage: goldenGradient }}>
                             <HomeIcon className="w-6 h-6" /> <span className="font-bold">Home</span>
                         </button>

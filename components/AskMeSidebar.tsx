@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Chat } from '@google/genai';
 import { Chapter, PageText } from '../types';
@@ -323,19 +324,19 @@ const AskMeSidebar: React.FC<AskMeSidebarProps> = ({ isOpen, onClose, onGoHome }
             {isOpen && (
                 <>
                     <div className="flex-shrink-0 p-4 border-b border-[var(--color-border-primary)] flex justify-between items-center bg-[var(--color-background-primary)] no-print-sidebar">
-                        <button onClick={onGoHome} className="p-2 rounded-lg flex items-center gap-2 px-4 text-white" aria-label="Go Home" style={{ backgroundImage: goldenGradient }}>
-                            <HomeIcon className="w-6 h-6" /> <span className="font-bold">Home</span>
-                        </button>
-                        <h2 className="text-xl font-bold golden-text flex items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close"><XIcon className="w-6 h-6 golden-text" /></button>
+                             <button onClick={() => downloadHtml('askme-content', `Chat about ${activeChapterTitle}`)} title="Download HTML" disabled={currentStep !== 'qa'} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><HtmlIcon className="w-4 h-4"/></button>
+                             <button onClick={handlePrint} title="Download PDF / Print" disabled={currentStep !== 'qa'} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PdfIcon className="w-4 h-4"/></button>
+                             <button onClick={handlePrint} title="Print" disabled={currentStep !== 'qa'} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PrintIcon className="w-4 h-4"/></button>
+                        </div>
+                         <h2 className="text-xl font-bold golden-text flex items-center gap-2">
                             <LightbulbIcon className="w-6 h-6 golden-text" />
                             Ask Me
                         </h2>
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => downloadHtml('askme-content', `Chat about ${activeChapterTitle}`)} title="Download HTML" className="p-2 text-white rounded-md" style={{backgroundImage: goldenGradient}}><HtmlIcon className="w-4 h-4"/></button>
-                            <button onClick={handlePrint} title="Download PDF / Print" className="p-2 text-white rounded-md" style={{backgroundImage: goldenGradient}}><PdfIcon className="w-4 h-4"/></button>
-                            <button onClick={handlePrint} title="Print" className="p-2 text-white rounded-md" style={{backgroundImage: goldenGradient}}><PrintIcon className="w-4 h-4"/></button>
-                            <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close"><XIcon className="w-6 h-6 golden-text" /></button>
-                        </div>
+                        <button onClick={onGoHome} className="p-2 rounded-lg flex items-center gap-2 px-4 text-white" aria-label="Go Home" style={{ backgroundImage: goldenGradient }}>
+                            <HomeIcon className="w-6 h-6" /> <span className="font-bold">Home</span>
+                        </button>
                     </div>
                     <div className="flex-grow min-h-0 printable-content">{renderContent()}</div>
                 </>

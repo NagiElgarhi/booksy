@@ -74,7 +74,7 @@ export const ArrowDownIcon: React.FC<{ className?: string }> = ({ className }) =
     </svg>
 );
 
-export const BookOpenIcon: React.FC<{ className?: string }> = ({ className }) => (
+export const BookOpenIcon: React.FC<{ className?: string, gradientId?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
     </svg>
@@ -346,5 +346,11 @@ export const OliveIcon: React.FC<{ className?: string }> = ({ className }) => (
       <path d="M12 2C9.243 2 7 4.925 7 9c0 4.121 2.243 7 5 7s5-2.879 5-7c0-4.075-2.243-7-5-7z" fill="#3A3A3A"/>
       <path d="M13.5 5.5c.4 1.2-.8 3.2-1.2 3.8s-1.8 1-2.2-.2c-.4-1.2.8-3.2 1.2-3.8s1.8-1 2.2.2z" fill="rgba(255,255,255,0.2)"/>
       <path d="M13.5,4 C12,2.5 14,1.5 15.5,3 C14.5,4.5 12.5,4.5 13.5,4Z" fill="#4CAF50" />
+    </svg>
+);
+
+export const MenuIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
     </svg>
 );

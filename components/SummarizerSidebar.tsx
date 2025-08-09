@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { UploadIcon, HomeIcon, SaveIcon, SearchIcon, SpellcheckIcon, SummarizeIcon, XIcon, HtmlIcon, PdfIcon, PrintIcon, RomanTempleIcon } from './icons';
 import { PageText, Chapter, SavedSummary } from '../types';
@@ -221,9 +222,14 @@ const SummarizerSidebar: React.FC<SummarizerSidebarProps> = ({ isOpen, onGoHome,
             {isOpen && (
                 <>
                     <div className="flex-shrink-0 p-4 border-b border-[var(--color-border-primary)] flex justify-between items-center bg-[var(--color-background-primary)] no-print-sidebar">
-                        <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close">
-                            <XIcon className="w-6 h-6 golden-text" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                             <button onClick={onClose} className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]" aria-label="Close">
+                                <XIcon className="w-6 h-6 golden-text" />
+                            </button>
+                             <button onClick={() => downloadHtml('summary-content', `Summary_${currentSummary?.chapterTitle}`)} title="Download HTML" disabled={!currentSummary} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><HtmlIcon className="w-4 h-4"/></button>
+                             <button onClick={handlePrint} title="Download PDF / Print" disabled={!currentSummary} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PdfIcon className="w-4 h-4"/></button>
+                             <button onClick={handlePrint} title="Print" disabled={!currentSummary} className="p-2 text-white rounded-md disabled:opacity-50" style={{backgroundImage: goldenGradient}}><PrintIcon className="w-4 h-4"/></button>
+                        </div>
                         <h2 className="text-xl font-bold golden-text flex items-center gap-2">
                             <SummarizeIcon className="w-6 h-6 -rotate-90 golden-text" />
                             Summaries
@@ -317,9 +323,6 @@ const SummarizerSidebar: React.FC<SummarizerSidebarProps> = ({ isOpen, onGoHome,
                                         <div className="flex justify-between items-center border-b border-[var(--color-border-primary)] pb-3 mb-4">
                                             <h3 className="text-2xl font-bold golden-text">Summary of: {currentSummary.chapterTitle}</h3>
                                             <div className="flex items-center gap-2 no-print-sidebar">
-                                                <button onClick={() => downloadHtml('summary-content', `Summary_${currentSummary.chapterTitle}`)} title="Download HTML" className="p-2 text-white rounded-md" style={{ backgroundImage: goldenGradient }}><HtmlIcon className="w-4 h-4"/></button>
-                                                <button onClick={handlePrint} title="Download PDF / Print" className="p-2 text-white rounded-md" style={{ backgroundImage: goldenGradient }}><PdfIcon className="w-4 h-4"/></button>
-                                                <button onClick={handlePrint} title="Print" className="p-2 text-white rounded-md" style={{ backgroundImage: goldenGradient }}><PrintIcon className="w-4 h-4"/></button>
                                                 <button onClick={handleSpellcheck} disabled={isSpellchecking} className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white rounded-lg shadow hover:opacity-90 disabled:bg-none disabled:bg-gray-500" style={{ backgroundImage: goldenGradient }}>
                                                     {isSpellchecking ? <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div> : <SpellcheckIcon className="w-4 h-4" />}
                                                     <span>Correct</span>
